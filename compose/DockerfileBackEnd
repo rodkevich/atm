@@ -1,0 +1,12 @@
+FROM golang:1.15.2-alpine3.12
+
+ENV PORT 11080
+
+RUN apk add --no-cache \
+        libc6-compat
+
+WORKDIR /go/src
+COPY . .
+RUN sh -c "go build -i -v -o api main.go && mv api /usr/local/bin"
+
+CMD ["api"]

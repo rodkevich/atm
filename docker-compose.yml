@@ -2,8 +2,10 @@ version: "3"
 
 services:
   atm_frontend:
+    tty: true
     build:
       context: ./frontend
+      dockerfile: ../compose/DockerfileFrontEnd
       args:
         - VUE_APP_API_URL=http://backend:11080
     container_name: atm_frontend
@@ -16,9 +18,14 @@ services:
       - atm_backend
     environment:
       - VUE_APP_API_URL=http://backend:11080
+    command: yarn serve
+
 
   atm_backend:
-    build: ./backend
+    tty: true
+    build:
+      context: ./backend
+      dockerfile: ../compose/DockerfileBackEnd
     container_name: atm_backend
     hostname: atm_backend
     ports:
@@ -42,7 +49,10 @@ services:
       - POSTGRES_DB=todos
 
   atm_tests:
-    build: ./tests
+    tty: true
+    build:
+      context: ./tests
+      dockerfile: ../compose/DockerfileCypress
     container_name: atm_tests
     depends_on:
       - atm_frontend
