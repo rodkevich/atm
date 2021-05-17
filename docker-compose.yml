@@ -1,38 +1,39 @@
 version: "3"
+
 services:
-  frontend:
+  atm_frontend:
     build:
       context: ./frontend
       args:
         - VUE_APP_API_URL=http://backend:11080
-    container_name: frontend
-    hostname: frontend
+    container_name: atm_frontend
+    hostname: atm_frontend
     ports:
       - "2015:2015"
     expose:
       - "2015"
     depends_on:
-      - backend
+      - atm_backend
     environment:
       - VUE_APP_API_URL=http://backend:11080
 
-  backend:
+  atm_backend:
     build: ./backend
-    container_name: backend
-    hostname: backend
+    container_name: atm_backend
+    hostname: atm_backend
     ports:
       - "17000:17000"
     expose:
       - "11080"
     depends_on:
-      - db
+      - atm_db
     environment:
       - DATABASE_URL=postgres://admin:password@db:5432/todos?sslmode=disable
 
-  db:
+  atm_db:
     image: postgres
-    container_name: db
-    hostname: db
+    container_name: atm_db
+    hostname: atm_db
     ports:
       - "5432:5432"
     environment:
@@ -40,13 +41,13 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=todos
 
-  tests:
+  atm_tests:
     build: ./tests
-    container_name: tests
+    container_name: atm_tests
     depends_on:
-      - frontend
-      - backend
-      - db
+      - atm_frontend
+      - atm_backend
+      - atm_db
     environment:
       - DATABASE_URL=postgres://admin:password@db:5432/todos?sslmode=disable
       - CYPRESS_FRONTEND_URL=http://frontend:2015
