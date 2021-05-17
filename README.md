@@ -1,6 +1,9 @@
 # atm
 
-http://localhost:11080/ANYTHING_HERE
+back:  
+http://localhost:11080/ANYTHING_HERE  
+front:  
+http://localhost:2015  
 
 ## build
 docker-compose build --parallel
