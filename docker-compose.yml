@@ -1,23 +1,27 @@
 version: "3"
 
 services:
-  atm_frontend:
+  atm_frontend: &app
     tty: true
     build:
       context: ./frontend
       dockerfile: ../compose/DockerfileFrontEnd
       args:
-        - VUE_APP_API_URL=http://backend:11080
+        - VUE_APP_API_URL=http://backend:11080/
     container_name: atm_frontend
     hostname: atm_frontend
     ports:
       - "2015:2015"
     expose:
       - "2015"
+    volumes:
+      - ./frontend:/app:delegated
     depends_on:
       - atm_backend
     environment:
-      - VUE_APP_API_URL=http://backend:11080
+      - VUE_APP_API_URL=http://backend:11080/
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=10
     command: npm run serve -- --port 2015
 
 
@@ -48,19 +52,19 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=todos
 
-  atm_tests:
-    tty: true
-    build:
-      context: ./tests
-      dockerfile: ../compose/DockerfileCypress
-    container_name: atm_tests
-    depends_on:
-      - atm_frontend
-      - atm_backend
-      - atm_db
-    environment:
-      - DATABASE_URL=postgres://admin:password@db:5432/todos?sslmode=disable
-      - CYPRESS_FRONTEND_URL=http://frontend:2015
-    volumes:
-      - "./tests/cypress:/home/node/tests/cypress"
-      - "./tests/report:/home/node/tests/report"
+  # atm_tests:
+  #   tty: true
+  #   build:
+  #     context: ./tests
+  #     dockerfile: ../compose/DockerfileCypress
+  #   container_name: atm_tests
+  #   depends_on:
+  #     - atm_frontend
+  #     - atm_backend
+  #     - atm_db
+  #   environment:
+  #     - DATABASE_URL=postgres://admin:password@db:5432/todos?sslmode=disable
+  #     - CYPRESS_FRONTEND_URL=http://frontend:2015
+  #   volumes:
+  #     - "./tests/cypress:/home/node/tests/cypress"
+  #     - "./tests/report:/home/node/tests/report"
