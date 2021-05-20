@@ -1,5 +1,7 @@
 version: "3"
+
 services:
+
   atm_frontend: &app
     tty: true
     build:
@@ -29,7 +31,7 @@ services:
     container_name: atm_backend
     hostname: atm_backend
     ports:
-      - "17000:17000"
+      - "11080:11080"
     expose:
       - "11080"
     depends_on:
