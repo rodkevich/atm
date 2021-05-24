@@ -17,10 +17,12 @@ services:
       - "2015"
     volumes:
       - ./frontend:/app:delegated
+      - /app/node_modules
     depends_on:
       - atm_backend
     environment:
       - VUE_APP_API_URL=http://backend:11080
+      - CHOKIDAR_USEPOLLING=true
     command: npm run serve -- --port 2015
 
   atm_backend:
