@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package backend;
+
+//option go_package = "github.com/rodkevich/atm/api/persons/v1/persons.proto";
+
+service Persons {
+  rpc Person(TestRequest) returns (TestResponse){}
+}
+
+message TestRequest {
+  string text = 1;
+  string nickname = 2;
+}
+
+message TestResponse {
+  string name = 1;
+  int32 id = 2;
+  string email = 3;
+}
