@@ -98,3 +98,7 @@ evans:
 	evans --path ${PWD}/Desktop/code/src/github.com/rodkevich/atm/api/persons/v1/persons.proto -p 9090
 	#evans /home/ioan/Desktop/code/src/github.com/rodkevich/atm/api/persons/v1/persons.proto -p 9090
 
+run-frontend:
+	@echo "--> Starting frontend"
+	cd ./frontend; \
+	npm run serve

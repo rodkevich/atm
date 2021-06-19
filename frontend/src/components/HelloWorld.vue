@@ -104,14 +104,14 @@ export default {
   methods: {
     getPerson: function () {
 
-      const client = new PersonsClient("http://localhost:9090", null, null);
+      const client = new PersonsClient("http://localhost:8080", null, null);
       const enableDevTools = window.__GRPCWEB_DEVTOOLS__ || (() => {});
       enableDevTools([
         client,
       ]);
 
       client.person(new TestRequest(), {}, (err, response) => {
-        this.lastPersonsResponse = response.person();
+        this.lastPersonsResponse = response.getEmail();
       });
     }
   }

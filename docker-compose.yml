@@ -2,28 +2,28 @@ version: "2.4"
 
 services:
 
-  atm_frontend: &app
-    tty: true
-    build:
-      context: ./frontend
-      dockerfile: ../compose/DockerfileFrontEnd
-      args:
-        - VUE_APP_API_URL=http://backend:11080
-    container_name: atm_frontend
-    hostname: atm_frontend
-    ports:
-      - "2015:2015"
-    expose:
-      - "2015"
-    volumes:
-      - ./frontend:/app:delegated
-      - /app/node_modules
-    depends_on:
-      - atm_backend
-    environment:
-      - VUE_APP_API_URL=http://backend:11080
-      - CHOKIDAR_USEPOLLING=true
-    command: npm run serve -- --port 2015
+#  atm_frontend: &app
+#    tty: true
+#    build:
+#      context: ./frontend
+#      dockerfile: ../compose/DockerfileFrontEnd
+#      args:
+#        - VUE_APP_API_URL=http://backend:11080
+#    container_name: atm_frontend
+#    hostname: atm_frontend
+#    ports:
+#      - "2015:2015"
+#    expose:
+#      - "2015"
+#    volumes:
+#      - ./frontend:/app:delegated
+#      - /app/node_modules
+#    depends_on:
+#      - atm_backend
+#    environment:
+#      - VUE_APP_API_URL=http://backend:11080
+#      - CHOKIDAR_USEPOLLING=true
+#    command: npm run serve -- --port 2015
 
   atm_backend:
     tty: true
@@ -44,7 +44,7 @@ services:
   atm_persons:
     build:
       context: ./cmd/persons
-      dockerfile: cmd/persons/Dockerfile
+      dockerfile: Dockerfile
     image: atm_persons
     ports:
       - "9090:9090"
