@@ -1,12 +1,12 @@
-# atm
+# atm  
 
 back:  
 http://localhost:11080/ANYTHING_HERE  
 front:  
 http://localhost:2015  
 
-## build
-docker-compose build --parallel
+## build  
+docker-compose build --parallel  
 
 ## run  
 docker-compose up  
@@ -18,13 +18,14 @@ docker stop $(docker ps -aq)
 ## remove all stopped  
 docker rm $(docker ps -aq)  
 
-## install
-cd tests
-npm install cypress --save-dev
+## install  
+cd tests  
+npm install cypress --save-dev  
 sudo chmod 777 -R cypress  
-       -- node_modules & so on if needed
+              -- or node_modules & so on if needed  
+
 ## cypress tests 
-docker-compose up --exit-code-from atm_tests --force-recreate
+docker-compose up --exit-code-from atm_tests --force-recreate  
 
 
 #### create and start containers 
@@ -49,3 +50,7 @@ docker-compose kill
 docker-compose rm  
 #### stop all containers and remove images, volumes  
 docker-compose down   
+
+# Info:  
+fast making dirs example:  
+mkdir -p ./parent_dir/{dir1,dir2,dir3}

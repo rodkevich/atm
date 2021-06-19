@@ -1,6 +1,12 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
+    <div>
+      <input type="button" class="button" value="Call that GRPC" @click="getPerson()">
+    </div>
+    <div>
+      {{ lastPersonsResponse }}
+    </div>
     <p>
       For a guide and recipes on how to configure / customize this project,<br />
       check out the
@@ -87,12 +93,29 @@
 </template>
 
 <script>
+import { PersonsClient } from '../jsclient/persons_grpc_web_pb';
+import { TestRequest } from '../jsclient/persons_pb';
+
 export default {
-  name: "HelloWorld",
-  props: {
-    msg: String,
+  name: 'Person',
+  data: function() {
+    return { lastPersonsResponse: 'n/a' }
   },
-};
+  methods: {
+    getPerson: function () {
+
+      const client = new PersonsClient("http://localhost:9090", null, null);
+      const enableDevTools = window.__GRPCWEB_DEVTOOLS__ || (() => {});
+      enableDevTools([
+        client,
+      ]);
+
+      client.person(new TestRequest(), {}, (err, response) => {
+        this.lastPersonsResponse = response.person();
+      });
+    }
+  }
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

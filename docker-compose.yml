@@ -1,4 +1,4 @@
-version: "3"
+version: "2.4"
 
 services:
 
@@ -37,20 +37,87 @@ services:
     expose:
       - "11080"
     depends_on:
-      - atm_db
+      - atm_postgres
     environment:
       - DATABASE_URL=postgres://admin:password@db:5432/todos?sslmode=disable
 
-  atm_db:
-    image: postgres
-    container_name: atm_db
-    hostname: atm_db
+  atm_persons:
+    build:
+      context: ./cmd/persons
+      dockerfile: cmd/persons/Dockerfile
+    image: atm_persons
+    ports:
+      - "9090:9090"
+
+  atm_envoy:
+    build:
+      context: ./envoy
+      dockerfile: Dockerfile
+    container_name: atm_envoy
+#    image: atm_envoy
+#    networks:
+#      - host
+    ports:
+      - "8080:8080"
+#    links:
+#      -atm_backend
+
+  atm_cassandra:
+    restart: unless-stopped
+    image: cassandra:latest
+    container_name: atm_cassandra
+    hostname: atm_cassandra
+    ports:
+      - "9043:9042"
+#    mem_limit: 4g
+    healthcheck:
+      test: [ "CMD", "cqlsh", "-e", "describe keyspaces" ]
+#      test: [ "CMD", "sh", "echo", "i'm ok" ]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+    volumes:
+      - ./cassandra_data:/var/lib/cassandra
+#      - ./docker/cassandra:/docker-entrypoint-initdb.d
+
+  atm_postgres:
+    image: postgres:latest
+    container_name: atm_postgres
+    hostname: atm_postgres
     ports:
       - "5432:5432"
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=todos
+      - POSTGRES_DB=todoss
+
+
+  atm_dynamodb_local:
+    command: "-jar DynamoDBLocal.jar -sharedDb -optimizeDbBeforeStartup -dbPath ./data"
+    image: "amazon/dynamodb-local:latest"
+    container_name: atm_dynamodb-local
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./docker/dynamodb:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
+
+  atm_redis:
+    image: redis:latest
+    container_name: atm_redis
+    ports:
+      - "6379:6379"
+
+  atm_mongo:
+    image: mongo:latest
+    container_name: atm_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb:/data/db
+      - mongodb_config:/data/configdb
+      - ./docker/atm_mongo/init.js:/docker-entrypoint-initdb.d
+
 
 #  atm_tests:
 #    tty: true
@@ -61,10 +128,136 @@ services:
 #    depends_on:
 #      - atm_frontend
 #      - atm_backend
-#      - atm_db
+#      - atm_postgres
 #    environment:
 #      - DATABASE_URL=postgres://admin:password@db:5432/todos?sslmode=disable
 #      - CYPRESS_FRONTEND_URL=http://frontend:2015
 #    volumes:
 #      - "./tests/cypress:/home/node/tests/cypress"
 #      - "./tests/report:/home/node/tests/report"
+
+#  sonarqube:
+#    image: sonarqube:community
+#    ports:
+#      - "9000:9000"
+#    environment:
+#      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+#      - ALLOW_EMPTY_PASSWORD=yes
+#    command: make sonar_test
+
+
+  sonar:
+    image: sonarqube:lts-community
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+      - ALLOW_EMPTY_PASSWORD=yes
+
+
+#  sonar-scanner:
+##    build: ./sonar-scanner
+#    image: sonarsource/sonar-scanner-cli
+#    depends_on:
+#      - sonar
+#    volumes:
+#      - .:/app:delegated
+#    environment:
+#      - SONAR_HOST_URL=http://sonar:9000
+#      - SONAR_PROJECT_KEY=atm
+#      - SONAR_PROJECT_NAME=atm
+#      - SONAR_LOGIN=d6e3a17aa183d5125cbb1fcaafecaccbb28423a9
+
+
+
+
+
+#  app-node:
+#    image: location-of-your-dynamodb-demo-app:latest
+#    container_name: app-node
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - "dynamodb-local"
+#    links:
+#      - "dynamodb-local"
+#    environment:
+#      AWS_ACCESS_KEY_ID: 'DUMMYIDEXAMPLE'
+#      AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY'
+#      REGION: 'eu-west-1'
+
+#  atm_cass1:
+#    image: cassandra:latest   # better to use a specific version, if you want to control upgrades
+#    container_name: atm_cass1
+#    hostname: atm_cass1
+##    mem_limit: 2g  # It's not strictly required, but it's better to have some memory limit
+#    healthcheck:
+#      test: ["CMD", "cqlsh", "-e", "describe keyspaces" ]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 60
+##    networks:
+##      - cassandra
+#    ports:
+#      - "9042:9042"  # Expose native binary CQL port for your apps
+##    volumes:
+##      - ./data/cass1:/var/lib/cassandra    # This is the volume that will persist data for cass1 node
+##      - ./etc/cass1:/etc/cassandra   # Use your own config files for full control
+#    environment: &environment    # Declare and save environments variables into "environment"
+#      CASSANDRA_SEEDS: "atm_cass1,atm_cass2"    # The first two nodes will be seeds
+##      CASSANDRA_CLUSTER_NAME: SolarSystem
+##      CASSANDRA_DC: Mars
+##      CASSANDRA_RACK: West
+##      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+##      CASSANDRA_NUM_TOKENS: 128
+#
+#  atm_cass2:
+#    image: cassandra:latest
+#    container_name: atm_cass2
+#    hostname: atm_cass2
+##    mem_limit: 2g
+#    healthcheck:
+#      test: ["CMD", "cqlsh", "-e", "describe keyspaces" ]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 60
+##    networks:
+##      - cassandra
+#    ports:
+#      - "9043:9042"  # Expose native binary CQL port for your apps
+##    volumes:
+##      - ./data/cass2:/var/lib/cassandra    # This is the volume that will persist data for cass2 node
+##      - ./etc/cass2:/etc/cassandra    # Use your own config files for full control
+#    environment: *environment    # point to "environment" to use the same environment variables as cass1
+#    depends_on:
+#      atm_cass1:    # start cass2 only after cass1 is healthy
+#        condition: service_healthy
+#
+#  atm_cass3:
+#    image: cassandra:latest
+#    container_name: atm_cass3
+#    hostname: atm_cass3
+##    mem_limit: 2g
+#    healthcheck:
+#      test: ["CMD", "cqlsh", "-e", "describe keyspaces" ]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 60
+##    networks:
+##      - cassandra
+#    ports:
+#      - "9044:9042"  # Expose native binary CQL port for your apps
+##    volumes:
+##      - ./data/cass3:/var/lib/cassandra    # This is the volume that will persist data for cass3 node
+##      - ./etc/cass3:/etc/cassandra    # Use your own config files for full control
+#    environment: *environment    # point to "environment" to use the same environment variables as cass1
+#    depends_on:
+#      atm_cass2:    # start cass3 only after cass1 is healthy
+#        condition: service_healthy #start cass3 only after cass2
+
+
+volumes:
+  mongodb:
+  mongodb_config:
+  cassandra_data:
+    driver: local

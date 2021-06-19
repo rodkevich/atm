@@ -37,3 +37,7 @@ yarn-error.log*
 *.sln
 *.sw*
 tests/cypress/videos
+/docker/
+*.scannerwork
+/cassandra_data/
+/data/
