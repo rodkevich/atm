@@ -2,28 +2,29 @@ version: "2.4"
 
 services:
 
-#  atm_frontend: &app
-#    tty: true
-#    build:
-#      context: ./frontend
-#      dockerfile: ../compose/DockerfileFrontEnd
-#      args:
-#        - VUE_APP_API_URL=http://backend:11080
-#    container_name: atm_frontend
-#    hostname: atm_frontend
-#    ports:
-#      - "2015:2015"
-#    expose:
-#      - "2015"
-#    volumes:
-#      - ./frontend:/app:delegated
-#      - /app/node_modules
-#    depends_on:
-#      - atm_backend
-#    environment:
-#      - VUE_APP_API_URL=http://backend:11080
-#      - CHOKIDAR_USEPOLLING=true
+  atm_frontend: &app
+    tty: true
+    build:
+      context: ./frontend
+      dockerfile: ../compose/DockerfileFrontEndStaging
+      args:
+        - VUE_APP_API_URL=http://backend:9090
+    container_name: atm_frontend
+    hostname: atm_frontend
+    ports:
+      - "2015:80"
+    expose:
+      - "2015"
+    volumes:
+      - ./frontend:/app:delegated
+      - /app/node_modules
+    depends_on:
+      - atm_persons
+    environment:
+      - VUE_APP_API_URL=http://backend:9090
+      - CHOKIDAR_USEPOLLING=true
 #    command: npm run serve -- --port 2015
+#    command: npx vue-cli-service serve
 
   atm_backend:
     tty: true

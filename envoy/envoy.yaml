@@ -1,5 +1,5 @@
 admin:
-  access_log_path: /tmp/admin_access.log
+  access_log_path: /dev/stdout
   address:
     socket_address: { address: 0.0.0.0, port_value: 9901 }
 
@@ -12,7 +12,7 @@ static_resources:
         - filters:
             - name: envoy.filters.network.http_connection_manager
               typed_config:
-                "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
                 codec_type: auto
                 stat_prefix: ingress_http
                 route_config:
@@ -24,9 +24,7 @@ static_resources:
                         - match: { prefix: "/" }
                           route:
                             cluster: atm_persons
-                            timeout: 0s
-                            max_stream_duration:
-                              grpc_timeout_header_max: 0s
+                            max_grpc_timeout: 0s
                       cors:
                         allow_origin_string_match:
                           - prefix: "*"
@@ -51,5 +49,5 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: node-server
+                      address: atm_persons
                       port_value: 9090

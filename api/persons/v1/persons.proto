@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package backend;
 
-//option go_package = "github.com/rodkevich/atm/api/persons/v1/persons.proto";
+option go_package = "github.com/rodkevich/atm/api/persons/v1/persons.proto";
 
 service Persons {
   rpc Person(TestRequest) returns (TestResponse){}

@@ -95,23 +95,24 @@
 <script>
 import { PersonsClient } from '../jsclient/persons_grpc_web_pb';
 import { TestRequest } from '../jsclient/persons_pb';
+import host from '../common/constants';
 
 export default {
   name: 'Person',
   data: function() {
-    return { lastPersonsResponse: 'n/a' }
+    return { lastPersonsResponse: 'n/a'}
   },
   methods: {
     getPerson: function () {
 
-      const client = new PersonsClient("http://localhost:8080", null, null);
+      const client = new PersonsClient(host, null, null);
       const enableDevTools = window.__GRPCWEB_DEVTOOLS__ || (() => {});
       enableDevTools([
         client,
       ]);
 
-      client.person(new TestRequest(), {}, (err, response) => {
-        this.lastPersonsResponse = response.getEmail();
+      client.person(new TestRequest(), {}, (err, res) => {
+        this.lastPersonsResponse = res.getEmail();
       });
     }
   }

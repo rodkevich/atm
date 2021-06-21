@@ -22,14 +22,6 @@ sonar_test_frontend:
 			-D sonar.exclusions=**/node_modules/**/* \
 			-D sonar.login=$(SONAR_PROJECT_UUID)
 
-
-sonar_change_admin_pass:
-	curl -u admin:admin -X POST "http://localhost:9000/api/users/change_password?login=admin&previousPassword=admin1&password=admin" | bash
-
-sonar_change_admin_001:
-	curl 'http://localhost:9000/api/user_tokens/generate' -H --compressed -H 'X-XSRF-TOKEN: gg401offf8d48qgrnnulia3m7d' -H 'Connection: keep-alive' --data-raw 'name=atm' | bash
-
-
 sonar_test_backend:
 	#export PATH='$${PATH}:/home/ioan/Desktop/sonar/bin'; \
 #	echo ${PATH}; \
@@ -43,6 +35,12 @@ sonar_test_backend:
 			-D sonar.projectName='atm'\
 			-D sonar.projectKey='atm'\
 			-D sonar.login=$(SONAR_PROJECT_UUID)
+
+sonar_change_admin_pass:
+	curl -u admin:admin -X POST "http://localhost:9000/api/users/change_password?login=admin&previousPassword=admin1&password=admin" | bash
+
+sonar_change_admin_001:
+	curl 'http://localhost:9000/api/user_tokens/generate' -H --compressed -H 'X-XSRF-TOKEN: gg401offf8d48qgrnnulia3m7d' -H 'Connection: keep-alive' --data-raw 'name=atm' | bash
 
 #proto:
 #	@echo "--> Generating gRPC clients"
@@ -94,9 +92,9 @@ gen:
 		api/persons/v1/persons.proto
 
 evans:
+	#evans --path ${PWD}/Desktop/code/src/github.com/rodkevich/atm/api/persons/v1/persons.proto -p 9090
 	#evans --path /path/to --path . --proto proto/city.proto
-	evans --path ${PWD}/Desktop/code/src/github.com/rodkevich/atm/api/persons/v1/persons.proto -p 9090
-	#evans /home/ioan/Desktop/code/src/github.com/rodkevich/atm/api/persons/v1/persons.proto -p 9090
+	evans /home/ioan/Desktop/code/src/github.com/rodkevich/atm/api/persons/v1/persons.proto -p 9090
 
 run-frontend:
 	@echo "--> Starting frontend"
