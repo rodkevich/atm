@@ -1,7 +1,1 @@
-{
-    "ignorePatterns": [
-    "./src/jsclient/persons_grpc_web_pb.js",
-    "./src/jsclient/persons_pb.js"
-    ]
-
-}
+src/jsclient/

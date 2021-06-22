@@ -27,9 +27,6 @@
     "sass-loader": "^8.0.2",
     "vue-template-compiler": "^2.6.11"
   },
-  "eslintIgnore": [
-    "./src/jsclient/**.js"
-  ],
   "eslintConfig": {
     "root": true,
     "env": {
