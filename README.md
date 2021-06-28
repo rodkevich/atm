@@ -53,4 +53,26 @@ docker-compose down
 
 # Info:  
 fast making dirs example:  
-mkdir -p ./parent_dir/{dir1,dir2,dir3}
+mkdir -p ./parent_dir/{dir1,dir2,dir3}  
+
+# Gql todos  
+
+mutation {
+    createTodo(
+        input:{text:"hello", userId:"world"}
+        ){
+            id
+            text
+            done
+            user{
+                id
+                name
+        }
+    }
+}
+
+query{
+    todos{
+    id
+    }
+}
